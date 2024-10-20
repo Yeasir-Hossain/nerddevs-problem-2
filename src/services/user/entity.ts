@@ -29,9 +29,9 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
   const options: MailOptions = {
     to: newUser.email,
     subject: "Verify your Email",
-    text: `<p>Dear User,</p>
+    html: `<p>Dear User,</p>
           <p>Please verify your email by clicking the following link.</p>
-          <p>${process.env.SERVER_URL}/user/verify?token${verificationToken}</p>`
+          <p>${process.env.SERVER_URL}/api/user/verify?token=${verificationToken}</p>`
   }
 
   mailer.sendMail(options);
@@ -47,6 +47,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
 
   const user = await User.findOne({ email: req.body.email });
   if (!user) throw new ApiError(404, "User not found");
+  if (!user.emailVerfied) throw new ApiError(403, "Email not verified. Please verify first.");
 
   const matchPass = bcrypt.compare(req.body.password, user.password!);
   if (!matchPass) throw new ApiError(400, "Invalid Credentials");
@@ -64,3 +65,16 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
   return res.status(200).send(user);
 };
 
+export const verify = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+  if (!req.query.token) throw new ApiError(400, "Please use a valid link");
+
+  const decoded: any = jwt.verify(req.query.token as string, process.env.SECRET_KEY!)
+  if (!decoded) throw new ApiError(400, "Please use a valid link");
+
+  const user = await User.findOne({ email: decoded.email });
+  if (!user) throw new ApiError(404, "User not found");
+  user.emailVerfied = true;
+  await user.save();
+
+  return res.status(200).send(user);
+};
