@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowJs": true,
+    "declaration": false,
+    "sourceMap": true,
+    "rootDirs": [
+      "src",
+    ],
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    // "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "pretty": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "typeRoots": [
+      "@types",
+      "node_modules/@types"
+    ],
+    "lib": [
+      "ES2020"
+    ]
+  },
+  "include": [
+    "./src/**/*",
+    "./src/types/**/*",
+    "express",
+    "src/types.ts"
+  ],
+}
