@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "nodemon --watch src src/index.ts",
+    "dev": "tsc && nodemon --watch src src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "deploy-render": "npm install && npm run build"

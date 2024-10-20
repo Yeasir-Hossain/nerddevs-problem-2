@@ -1,3 +1,5 @@
+import { Address } from "nodemailer/lib/mailer";
+
 export interface IUser {
   id: string;
   firstName: string;
@@ -6,16 +8,6 @@ export interface IUser {
   email: string;
   password: string;
   emailVerfied: boolean;
-}
-
-export interface MailOptions {
-  from?: string;
-  to: string | string[];
-  cc?: string | string[];
-  bcc?: string | string[];
-  subject: string;
-  text?: string;
-  html?: string;
 }
 
 export interface SMTPConfig {

@@ -3,6 +3,8 @@ import { NextFunction, Response, Request } from "express";
 import jwt from "jsonwebtoken";
 import ApiError from "../../errors/ApiError";
 import User from "./model";
+import MailService from "../../controllers/mail";
+import { MailOptions } from "nodemailer/lib/json-transport";
 
 const CREATE_ALLOWED = new Set(["firstName", "lastName", "mobileNumber", "email", "password"]);
 
@@ -15,7 +17,24 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     throw new ApiError(400, "Email and Password must be provided.");
   }
 
+  const existingUser = await User.findOne({ email: req.body.email })
+  if (existingUser) {
+    throw new ApiError(400, "User already exists with this email.");
+  }
+
   const newUser = await User.create({ ...req.body });
+  const verificationToken = jwt.sign({ email: newUser.email }, process.env.SECRET_KEY!)
+
+  const mailer = MailService.getInstance();
+  const options: MailOptions = {
+    to: newUser.email,
+    subject: "Verify your Email",
+    text: `<p>Dear User,</p>
+          <p>Please verify your email by clicking the following link.</p>
+          <p>${process.env.SERVER_URL}/user/verify?token${verificationToken}</p>`
+  }
+
+  mailer.sendMail(options);
 
   return res.status(201).send(newUser);
 }

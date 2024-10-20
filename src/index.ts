@@ -45,8 +45,7 @@ app.listen(PORT, async () => {
   const dbStatus = await connectToDB();
   console.log(dbStatus);
 
-  const mailContoller = MailService.getInstance();
-  await mailContoller.createConnection();
+  MailService.getInstance();
 
   console.log(`=> Server is running on port ${PORT}`);
 });
