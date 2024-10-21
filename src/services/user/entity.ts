@@ -14,12 +14,12 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 
   // Check if email and required fields are provided
   if (!req.body.email || !req.body.password) {
-    throw new ApiError(400, "Email and Password must be provided.");
+    throw new ApiError(400, "Email and Password must be provided.", true);
   }
 
   const existingUser = await User.findOne({ email: req.body.email });
   if (existingUser) {
-    throw new ApiError(400, "User already exists with this email.");
+    throw new ApiError(400, "User already exists with this email.", true);
   }
 
   req.body.password = await bcrypt.hash(req.body.password, 10);
@@ -47,11 +47,11 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
   }
 
   const user = await User.findOne({ email: req.body.email });
-  if (!user) throw new ApiError(404, "User not found");
+  if (!user) throw new ApiError(404, "User not found", true);
   if (!user.emailVerfied) throw new ApiError(403, "Email not verified. Please verify first.");
 
   const matchPass = await bcrypt.compare(req.body.password, user.password!);
-  if (!matchPass) throw new ApiError(400, "Invalid Credentials");
+  if (!matchPass) throw new ApiError(400, "Invalid Credentials", true);
 
   const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY!);
 
@@ -67,10 +67,10 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
 };
 
 export const verify = async (req: Request, res: Response, next: NextFunction) => {
-  if (!req.query.token) throw new ApiError(400, "Please use a valid link");
+  if (!req.query.token) throw new ApiError(400, "Please use a valid link", true);
 
   const decoded: any = jwt.verify(req.query.token as string, process.env.SECRET_KEY!);
-  if (!decoded) throw new ApiError(400, "Please use a valid link");
+  if (!decoded) throw new ApiError(400, "Please use a valid link", true);
 
   const user = await User.findOne({ email: decoded.email });
   if (!user) throw new ApiError(404, "User not found");
