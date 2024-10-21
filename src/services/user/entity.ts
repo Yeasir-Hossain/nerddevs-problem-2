@@ -66,7 +66,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
   return res.status(200).send(user);
 };
 
-export const verify = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+export const verify = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.query.token) throw new ApiError(400, "Please use a valid link");
 
   const decoded: any = jwt.verify(req.query.token as string, process.env.SECRET_KEY!);
@@ -77,5 +77,5 @@ export const verify = async (req: Request, res: Response, next: NextFunction): P
   user.emailVerfied = true;
   await user.save();
 
-  return res.status(200).send(user);
+  res.status(301).redirect(process.env.CLIENT_REDIRECT_URL!);
 };
