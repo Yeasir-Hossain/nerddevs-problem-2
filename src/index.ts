@@ -5,7 +5,7 @@ import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
 import connectToDB from "./db/connectToDB";
 import ApiError from "./errors/ApiError";
-import * as errors from "./middleware/error"
+import * as errors from "./middleware/error";
 import router from "./routes";
 import MailService from "./controllers/mail";
 
